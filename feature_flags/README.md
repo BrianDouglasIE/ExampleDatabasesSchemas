@@ -33,7 +33,7 @@ WHERE d.hostname = 'example.com'
 ```
 
 ```
-  hostname   |       flag       | status | env |          updated_at
+  hostname   |       flag       | status | env         |          updated_at
 -------------+------------------+--------+-------------+-------------------------------
  example.com | enable_dark_mode | on     | staging     | 2025-08-05 08:10:01.471816+00
 (1 row)
