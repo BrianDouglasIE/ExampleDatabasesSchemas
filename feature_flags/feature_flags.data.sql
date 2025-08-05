@@ -1,55 +1,19 @@
-INSERT INTO flags (name, status) VALUES
-  ('enable_dark_mode', 'on'),
-  ('beta_feature', 'off'),
-  ('maintenance_mode', 'off'),
-  ('show_ads', 'on'),
-  ('new_ui', 'on'),
-  ('disable_signup', 'off'),
-  ('require_2fa', 'on'),
-  ('log_user_activity', 'on'),
-  ('experimental_search', 'off'),
-  ('hide_comments', 'off');
+INSERT INTO flags (name) VALUES
+  ('enable_dark_mode'),
+  ('show_ads'),
+  ('new_ui'),
+  ('require_2fa'),
+  ('experimental_search'),
+  ('hide_comments');
 
 INSERT INTO domains (hostname) VALUES
   ('example.com'),
-  ('testsite.org'),
-  ('demo.net'),
-  ('sample.co'),
-  ('website.biz'),
-  ('myapp.io'),
-  ('yourapp.dev'),
-  ('coolproject.app'),
-  ('mockservice.ai'),
-  ('newproduct.com'),
-  ('launchpad.net'),
-  ('oldsite.org'),
-  ('alpha.dev'),
-  ('beta.app'),
-  ('prod.com'),
-  ('staging.io'),
-  ('devbox.net'),
-  ('userportal.org'),
-  ('mytoolbox.ai'),
-  ('testdrive.com');
+  ('demo.net');
 
-INSERT INTO domain_flags (domain_id, flag_id) VALUES
-  (1, 1), (1, 3), (1, 5),
-  (2, 2), (2, 4),
-  (3, 1), (3, 6), (3, 7),
-  (4, 4), (4, 8),
-  (5, 2), (5, 9),
-  (6, 1), (6, 10),
-  (7, 1), (7, 2), (7, 3),
-  (8, 5), (8, 6),
-  (9, 1), (9, 2), (9, 9),
-  (10, 3), (10, 4), (10, 7),
-  (11, 2), (11, 8),
-  (12, 5), (12, 6),
-  (13, 3), (13, 7), (13, 10),
-  (14, 1), (14, 9),
-  (15, 2), (15, 6), (15, 10),
-  (16, 4), (16, 5),
-  (17, 3), (17, 6), (17, 8),
-  (18, 1), (18, 4),
-  (19, 2), (19, 5), (19, 7),
-  (20, 3), (20, 9);
+INSERT INTO domain_flags (domain_id, flag_id, status, environment) VALUES
+  (1, 1, 'on',  'dev'), (1, 1, 'on',  'staging'), (1, 1, 'off', 'prod'),
+  (1, 3, 'on',  'dev'), (1, 3, 'off', 'staging'), (1, 3, 'off', 'prod'),
+  (1, 4, 'off', 'dev'), (1, 4, 'off', 'staging'), (1, 4, 'on',  'prod'),
+  (2, 2, 'on',  'dev'), (2, 2, 'on',  'staging'), (2, 2, 'off', 'prod'),
+  (2, 3, 'on',  'dev'), (2, 3, 'off', 'staging'), (2, 3, 'off', 'prod'),
+  (2, 5, 'on',  'dev'), (2, 4, 'on',  'staging'), (2, 5, 'off', 'prod');
