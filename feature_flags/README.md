@@ -2,7 +2,7 @@
 
 Feature flags are simple _on_ / _off_ flags that can be used to toggle application features without needing a production release.
 
-This implementation allows for flags that are domain specific. Each flag can have a different status based on the current environment.
+This implementation allows for flags that are domain specific. Each flag can have a different status based on the current env.
 For example the flag `enable_dark_mode` on the domain `example.com` may be `on` in `staging` and `off` in `production`.
 
 ## Set Up
@@ -22,18 +22,18 @@ SELECT
   d.hostname,
   f.name AS flag,
   df.status,
-  df.environment,
+  df.env,
   f.updated_at
 FROM flags f
 JOIN domain_flags df ON f.id = df.flag_id
 JOIN domains d ON d.id = df.domain_id
 WHERE d.hostname = 'example.com'
-  AND df.environment = 'staging'
+  AND df.env = 'staging'
   AND f.name = 'enable_dark_mode';
 ```
 
 ```
-  hostname   |       flag       | status | environment |          updated_at
+  hostname   |       flag       | status | env |          updated_at
 -------------+------------------+--------+-------------+-------------------------------
  example.com | enable_dark_mode | on     | staging     | 2025-08-05 08:10:01.471816+00
 (1 row)
@@ -51,7 +51,7 @@ FROM flags f
 JOIN domain_flags df ON f.id = df.flag_id
 JOIN domains d ON d.id = df.domain_id
 WHERE d.hostname = 'example.com'
-  AND df.environment = 'prod'
+  AND df.env = 'prod'
   AND df.status = 'on';
 ```
 
@@ -62,13 +62,13 @@ WHERE d.hostname = 'example.com'
 (1 row)
 ```
 
-### Get status of all flags on all environments for a given domain
+### Get status of all flags on all envs for a given domain
 
 ```sql
 SELECT
   f.name AS flag,
   df.status,
-  df.environment
+  df.env
 FROM flags f
 JOIN domain_flags df ON f.id = df.flag_id
 JOIN domains d ON d.id = df.domain_id
@@ -76,7 +76,7 @@ WHERE d.hostname = 'example.com';
 ```
 
 ```
-       flag       | status | environment
+       flag       | status | env
 ------------------+--------+-------------
  enable_dark_mode | on     | dev
  enable_dark_mode | on     | staging
@@ -94,5 +94,5 @@ WHERE d.hostname = 'example.com';
 
 ```sql
 CREATE TYPE flag_status AS ENUM ('on', 'off');
-CREATE TYPE environment AS ENUM ('dev', 'staging', 'prod');
+CREATE TYPE env AS ENUM ('dev', 'staging', 'prod');
 ```

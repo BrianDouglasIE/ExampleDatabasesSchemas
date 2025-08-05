@@ -15,7 +15,7 @@ $$ LANGUAGE plpgsql;
 -- ENUMS
 
 CREATE TYPE flag_status AS ENUM ('on', 'off');
-CREATE TYPE environment AS ENUM ('dev', 'staging', 'prod');
+CREATE TYPE env AS ENUM ('dev', 'staging', 'prod');
 
 -- TABLES
 
@@ -47,8 +47,8 @@ CREATE TABLE IF NOT EXISTS domain_flags (
 	domain_id INT NOT NULL REFERENCES domains(id) ON DELETE CASCADE,
 	flag_id INT NOT NULL REFERENCES flags(id) ON DELETE CASCADE,
 	status flag_status DEFAULT 'off',
-	environment environment,
-	PRIMARY KEY (domain_id, flag_id, environment)
+	env env,
+	PRIMARY KEY (domain_id, flag_id, env)
 );
 
 -- INDICES

@@ -10,7 +10,7 @@ INSERT INTO domains (hostname) VALUES
   ('example.com'),
   ('demo.net');
 
-INSERT INTO domain_flags (domain_id, flag_id, status, environment) VALUES
+INSERT INTO domain_flags (domain_id, flag_id, status, env) VALUES
   (1, 1, 'on',  'dev'), (1, 1, 'on',  'staging'), (1, 1, 'off', 'prod'),
   (1, 3, 'on',  'dev'), (1, 3, 'off', 'staging'), (1, 3, 'off', 'prod'),
   (1, 4, 'off', 'dev'), (1, 4, 'off', 'staging'), (1, 4, 'on',  'prod'),
