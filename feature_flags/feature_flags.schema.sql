@@ -2,7 +2,7 @@
 -- psql -d feature_flags -f feature_flags.schema.sql
 -- psql -d feature_flags -f feature_flags.data.sql
 
--- FUNCTIONS
+-- TRIGGERS
 
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
