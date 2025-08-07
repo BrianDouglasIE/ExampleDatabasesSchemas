@@ -94,7 +94,7 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1 FROM pg_type WHERE typname = 'token_state'
     ) THEN
-        CREATE TYPE token_state AS ENUM ('active', 'revoked');
+        CREATE TYPE token_state AS ENUM ('active', 'revoked', 'expired');
     END IF;
 END;
 $$;
