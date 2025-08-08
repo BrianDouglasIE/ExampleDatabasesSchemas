@@ -19,7 +19,7 @@ $$ LANGUAGE plpgsql;
 CREATE TABLE IF NOT EXISTS users (
 	id SERIAL PRIMARY KEY,
 	email TEXT NOT NULL UNIQUE,
-	password TEXT NOT NULL,
+	password CHAR(60) NOT NULL,
 	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
@@ -131,7 +131,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION create_token_for_user(_user_id INT, _user_pw TEXT)
+CREATE OR REPLACE FUNCTION login(_user_id INT, _user_pw TEXT)
 RETURNS TABLE (
     id INT,
     user_id INT,
@@ -143,16 +143,23 @@ RETURNS TABLE (
 ) AS $$
 DECLARE
 	password_match BOOL;
+	recent_failed_attempts INT;
 BEGIN
+	SELECT failed_login_count(_user_id, '10 minutes') INTO recent_failed_attempts;
+
+	IF recent_failed_attempts >= 3 THEN
+		RAISE EXCEPTION 'Too many failed attempts' USING ERRCODE = 'P0001';
+	END IF;
+
 	SELECT is_correct_user_password(_user_id, _user_pw) INTO password_match;
 	
 	IF password_match = FALSE THEN
-		RAISE EXCEPTION 'Invalid password';
+		RAISE EXCEPTION 'Invalid password' USING ERRCODE = 'P0001';
 	END IF;
 
 	RETURN QUERY
 	INSERT INTO tokens (user_id, token)
-	VALUES (_user_id, encode(gen_random_bytes(32), 'base64'))
+	VALUES (_user_id, encode(gen_random_bytes(32), 'hex'))
 	RETURNING 
 		tokens.id,
 		tokens.user_id,
@@ -161,6 +168,11 @@ BEGIN
 		tokens.expires_at,
 		tokens.created_at,
 		tokens.updated_at;
+EXCEPTION
+	WHEN OTHERS THEN
+		RAISE NOTICE 'Login failed: %', SQLERRM;
+		INSERT INTO user_failed_logins (user_id)
+		VALUES (_user_id);
 END
 $$ LANGUAGE plpgsql;
 
@@ -185,12 +197,37 @@ BEGIN
 END
 $$ LANGUAGE plpgsql;
 
+-- failed login attempts
+
+CREATE TABLE IF NOT EXISTS user_failed_logins (
+	id SERIAL PRIMARY KEY,
+	user_id INT REFERENCES users(id) ON DELETE CASCADE,
+	created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE OR REPLACE FUNCTION failed_login_count(_user_id INT, _interval TEXT)
+RETURNS INT AS $$
+DECLARE
+	failed_attempts INT;
+BEGIN
+	SELECT COUNT(id) INTO failed_attempts
+	FROM user_failed_logins
+	WHERE user_id = _user_id
+	  AND created_at > CURRENT_TIMESTAMP - _interval::interval;
+	
+	RETURN failed_attempts;
+END
+$$ LANGUAGE plpgsql;
+
 -- queries
 
 -- SELECT * FROM create_new_user('emma@gmail.com', 'secret');
 -- SELECT * FROM user_view;
 -- SELECT * FROM is_correct_user_password(1, 'secret1');
--- SELECT * FROM create_token_for_user(1, 'secret');
+SELECT * FROM login(1, 'secret');
+-- SELECT * FROM user_failed_logins;
+
+-- SELECT * FROM failed_login_count(1, '20 minutes');
 -- SELECT * FROM get_latest_active_token(1);
 -- SELECT * FROM update_user_password(1, 'password', 'secret');
 -- SELECT * FROM revoke_active_tokens(1);
